@@ -16,7 +16,6 @@
             <th>Title</th>
             <th>Author</th>
             <th>Category</th>
-            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -26,15 +25,6 @@
                 <td>@book.Title</td>
                 <td>@book.Author</td>
                 <td>@book.CategoryName</td>
-                <td>
-                    <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#bookModal" data-url="@Url.Action("Edit", "Books", new { id = book.BookId })">
-                        Edit
-                    </button>
-                    <form asp-action="Delete" method="post" style="display:inline;">
-                        <input type="hidden" name="id" value="@book.BookId" />
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-                </td>
             </tr>
         }
     </tbody>
@@ -52,7 +42,6 @@
     <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.5.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-
 
     <script type="text/javascript">
         $(function () {
