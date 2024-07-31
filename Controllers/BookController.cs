@@ -19,7 +19,7 @@ public class BookController : Controller
             .Include(b => b.Category)
             .Select(b => new BookViewModel
             {
-                BookId = b.BookId,
+                Id = b.Id,
                 Title = b.Title,
                 Author = b.Author,
                 CategoryName = b.Category.CategoryName
@@ -30,11 +30,10 @@ public class BookController : Controller
         return View(books);
     }
 
-
     [HttpGet]
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
-        ViewBag.Categories = _context.Categories.ToList();
+        ViewBag.Categories = await _context.Categories.ToListAsync();
         return PartialView("_CreateEdit", new Book());
     }
 
@@ -47,19 +46,32 @@ public class BookController : Controller
             await _context.SaveChangesAsync();
             return Json(new { success = true });
         }
-        ViewBag.Categories = _context.Categories.ToList();
+
+        ViewBag.Categories = await _context.Categories.ToListAsync();
         return PartialView("_CreateEdit", book);
     }
 
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
-        var book = await _context.Books.FindAsync(id);
+        var book = await _context.Books
+            .Include(b => b.Category)
+            .Where(b => b.Id == id)
+            .Select(b => new BookViewModel
+            {
+                Id = b.Id,
+                Title = b.Title,
+                Author = b.Author,
+                CategoryId = b.CategoryId // Assuming you have CategoryId in BookViewModel
+            })
+            .FirstOrDefaultAsync();
+
         if (book == null)
         {
-            return NotFound();
+            return Json(new { success = false });
         }
-        ViewBag.Categories = _context.Categories.ToList();
+
+        ViewBag.Categories = await _context.Categories.ToListAsync();
         return PartialView("_CreateEdit", book);
     }
 
@@ -76,9 +88,9 @@ public class BookController : Controller
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_context.Books.Any(e => e.BookId == book.BookId))
+                if (!_context.Books.Any(e => e.Id == book.Id))
                 {
-                    return NotFound();
+                    return Json(new { success = false });
                 }
                 else
                 {
@@ -86,7 +98,8 @@ public class BookController : Controller
                 }
             }
         }
-        ViewBag.Categories = _context.Categories.ToList();
+
+        ViewBag.Categories = await _context.Categories.ToListAsync();
         return PartialView("_CreateEdit", book);
     }
 
@@ -96,11 +109,11 @@ public class BookController : Controller
         var book = await _context.Books.FindAsync(id);
         if (book == null)
         {
-            return NotFound();
+            return Json(new { success = false });
         }
+
         _context.Books.Remove(book);
         await _context.SaveChangesAsync();
         return Json(new { success = true });
     }
-
 }

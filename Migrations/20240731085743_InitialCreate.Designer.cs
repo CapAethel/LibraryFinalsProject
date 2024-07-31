@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryFinalsProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240730141541_InitialCreate")]
+    [Migration("20240731085743_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -27,17 +27,17 @@ namespace LibraryFinalsProject.Migrations
 
             modelBuilder.Entity("LibraryFinalsProject.Models.Book", b =>
                 {
-                    b.Property<int>("BookId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BookId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Author")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("BookId1")
+                    b.Property<int?>("BookId")
                         .HasColumnType("int");
 
                     b.Property<int>("CategoryId")
@@ -47,9 +47,9 @@ namespace LibraryFinalsProject.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("BookId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("BookId1");
+                    b.HasIndex("BookId");
 
                     b.HasIndex("CategoryId");
 
@@ -77,7 +77,7 @@ namespace LibraryFinalsProject.Migrations
                 {
                     b.HasOne("LibraryFinalsProject.Models.Book", null)
                         .WithMany("Books")
-                        .HasForeignKey("BookId1");
+                        .HasForeignKey("BookId");
 
                     b.HasOne("LibraryFinalsProject.Models.Category", "Category")
                         .WithMany()

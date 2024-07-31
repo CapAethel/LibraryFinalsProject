@@ -27,8 +27,8 @@
                 <td>@book.Author</td>
                 <td>@book.CategoryName</td>
                 <td>
-                    <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editBookModal" data-id="@book.BookId">Edit</button>
-                    <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteBookModal" data-id="@book.BookId">Delete</button>
+                    <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editBookModal" data-id="@book.Id">Edit</button>
+                    <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteBookModal" data-id="@book.Id">Delete</button>
                 </td>
             </tr>
         }
@@ -86,7 +86,7 @@
             </div>
             <div class="modal-body">
                 <form id="editBookForm">
-                    <input type="hidden" id="editBookId" name="BookId">
+                    <input type="hidden" id="editBookId" name="Id">
                     <div class="form-group">
                         <label for="editBookTitle">Title</label>
                         <input type="text" class="form-control" id="editBookTitle" name="Title" placeholder="Enter book title" required>
@@ -172,15 +172,15 @@
             // Handle Edit Book
             $('#editBookModal').on('show.bs.modal', function (e) {
                 var button = $(e.relatedTarget); // Button that triggered the modal
-                var bookId = button.data('id'); // Extract info from data-* attributes
+                var Id = button.data('id'); // Extract info from data-* attributes
 
                 $.ajax({
                     url: '@Url.Action("Edit", "Book")',
                     type: 'GET',
-                    data: { id: bookId },
+                    data: { id: Id },
                     success: function (result) {
                         if (result.success) {
-                            $('#editBookId').val(result.book.BookId);
+                            $('#editBookId').val(result.book.Id);
                             $('#editBookTitle').val(result.book.Title);
                             $('#editBookAuthor').val(result.book.Author);
                             $('#editBookCategory').val(result.book.CategoryId);
@@ -227,17 +227,17 @@
             // Handle Delete Book
             $('#deleteBookModal').on('show.bs.modal', function (e) {
                 var button = $(e.relatedTarget); // Button that triggered the modal
-                var bookId = button.data('id'); // Extract info from data-* attributes
-                $('#deleteBookButton').data('id', bookId);
+                var Id = button.data('id'); // Extract info from data-* attributes
+                $('#deleteBookButton').data('id', Id);
             });
 
             $('#deleteBookButton').click(function () {
-                var bookId = $(this).data('id');
+                var Id = $(this).data('id');
 
                 $.ajax({
                     url: '@Url.Action("Delete", "Book")',
                     type: 'POST',
-                    data: { id: bookId },
+                    data: { id: Id },
                     success: function (result) {
                         if (result.success) {
                             // Reload the book list
