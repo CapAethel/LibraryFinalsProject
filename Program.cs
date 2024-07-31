@@ -41,7 +41,11 @@ void SeedData(ApplicationDbContext context)
             new Book { Title = "Book 1", Author = "Author 1", CategoryId = 1 },
             new Book { Title = "Book 2", Author = "Author 2", CategoryId = 2 },
             new Book { Title = "Book 3", Author = "Author 3", CategoryId = 3 },
-            new Book { Title = "Book 4", Author = "Author 4", CategoryId = 4 }
+            new Book { Title = "Book 4", Author = "Author 4", CategoryId = 4 },
+            new Book { Title = "Book 5", Author = "Author 1", CategoryId = 1 },
+            new Book { Title = "Book 6", Author = "Author 2", CategoryId = 2 },
+            new Book { Title = "Book 7", Author = "Author 3", CategoryId = 3 },
+            new Book { Title = "Book 8", Author = "Author 4", CategoryId = 4 }
         );
 
         context.SaveChanges();

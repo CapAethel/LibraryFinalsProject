@@ -26,8 +26,10 @@ public class BookController : Controller
             })
             .ToListAsync();
 
+        ViewBag.Categories = await _context.Categories.ToListAsync();
         return View(books);
     }
+
 
     [HttpGet]
     public IActionResult Create()
@@ -43,7 +45,7 @@ public class BookController : Controller
         {
             _context.Add(book);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = true });
         }
         ViewBag.Categories = _context.Categories.ToList();
         return PartialView("_CreateEdit", book);
@@ -70,6 +72,7 @@ public class BookController : Controller
             {
                 _context.Update(book);
                 await _context.SaveChangesAsync();
+                return Json(new { success = true });
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -82,7 +85,6 @@ public class BookController : Controller
                     throw;
                 }
             }
-            return RedirectToAction(nameof(Index));
         }
         ViewBag.Categories = _context.Categories.ToList();
         return PartialView("_CreateEdit", book);
@@ -92,8 +94,13 @@ public class BookController : Controller
     public async Task<IActionResult> Delete(int id)
     {
         var book = await _context.Books.FindAsync(id);
+        if (book == null)
+        {
+            return NotFound();
+        }
         _context.Books.Remove(book);
         await _context.SaveChangesAsync();
         return Json(new { success = true });
     }
+
 }

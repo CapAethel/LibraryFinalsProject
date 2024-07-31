@@ -31,7 +31,7 @@ a {
 }
 
 .box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+    margin-bottom: 60px;
 }
 
 button.accept-policy {
@@ -45,4 +45,11 @@ button.accept-policy {
   width: 100%;
   white-space: nowrap;
   line-height: 60px;
+}
+.modal-dialog .modal-content {
+    background-color: #fff;
+    border-radius: .3rem;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
+    margin: 0;
+    padding: 1rem;
 }

@@ -6,7 +6,7 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#bookModal" data-url="@Url.Action("Create", "Books")">
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#bookModal">
     Add Book
 </button>
 
@@ -16,50 +16,249 @@
             <th>Title</th>
             <th>Author</th>
             <th>Category</th>
+            <th>Actions</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="booksTableBody">
         @foreach (var book in Model)
         {
             <tr>
                 <td>@book.Title</td>
                 <td>@book.Author</td>
                 <td>@book.CategoryName</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editBookModal" data-id="@book.BookId">Edit</button>
+                    <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteBookModal" data-id="@book.BookId">Delete</button>
+                </td>
             </tr>
         }
     </tbody>
 </table>
 
+<!-- Add Book Modal -->
 <div class="modal fade" id="bookModal" tabindex="-1" role="dialog" aria-labelledby="bookModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <!-- The content will be loaded dynamically with AJAX -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookModalLabel">Add New Book</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="bookForm">
+                    <div class="form-group">
+                        <label for="bookTitle">Title</label>
+                        <input type="text" class="form-control" id="bookTitle" name="Title" placeholder="Enter book title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bookAuthor">Author</label>
+                        <input type="text" class="form-control" id="bookAuthor" name="Author" placeholder="Enter book author" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bookCategory">Category</label>
+                        <select class="form-control" id="bookCategory" name="CategoryId" required>
+                            @foreach (var category in ViewBag.Categories as List<LibraryFinalsProject.Models.Category>)
+                            {
+                                <option value="@category.CategoryId">@category.CategoryName</option>
+                            }
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveBookButton">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Book Modal -->
+<div class="modal fade" id="editBookModal" tabindex="-1" role="dialog" aria-labelledby="editBookModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editBookModalLabel">Edit Book</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editBookForm">
+                    <input type="hidden" id="editBookId" name="BookId">
+                    <div class="form-group">
+                        <label for="editBookTitle">Title</label>
+                        <input type="text" class="form-control" id="editBookTitle" name="Title" placeholder="Enter book title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editBookAuthor">Author</label>
+                        <input type="text" class="form-control" id="editBookAuthor" name="Author" placeholder="Enter book author" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editBookCategory">Category</label>
+                        <select class="form-control" id="editBookCategory" name="CategoryId" required>
+                            @foreach (var category in ViewBag.Categories as List<LibraryFinalsProject.Models.Category>)
+                            {
+                                <option value="@category.CategoryId">@category.CategoryName</option>
+                            }
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="updateBookButton">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Book Modal -->
+<div class="modal fade" id="deleteBookModal" tabindex="-1" role="dialog" aria-labelledby="deleteBookModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteBookModalLabel">Delete Book</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this item?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="deleteBookButton">Delete</button>
+            </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.5.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Handle Add Book
+            $('#saveBookButton').click(function () {
+                var formData = $('#bookForm').serialize();
 
-    <script type="text/javascript">
-        $(function () {
-            $('#bookModal').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget); // Button that triggered the modal
-                var url = button.data('url'); // Extract info from data-* attributes
-                var modal = $(this);
                 $.ajax({
-                    url: url,
-                    method: 'GET',
-                    success: function (data) {
-                        modal.find('.modal-content').html(data);
+                    url: '@Url.Action("Create", "Book")',
+                    type: 'POST',
+                    data: formData,
+                    success: function (result) {
+                        if (result.success) {
+                            // Reload the book list
+                            $.ajax({
+                                url: '@Url.Action("Index", "Book")',
+                                type: 'GET',
+                                success: function (data) {
+                                    var $newTableBody = $(data).find('#booksTableBody');
+                                    $('#booksTableBody').html($newTableBody.html());
+                                }
+                            });
+                            // Close the modal
+                            $('#bookModal').modal('hide');
+                        } else {
+                            alert('Failed to save book: ' + result.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
                     }
                 });
             });
 
-            $('#bookModal').on('hidden.bs.modal', function () {
-                $(this).find('.modal-content').html('');
+            // Handle Edit Book
+            $('#editBookModal').on('show.bs.modal', function (e) {
+                var button = $(e.relatedTarget); // Button that triggered the modal
+                var bookId = button.data('id'); // Extract info from data-* attributes
+
+                $.ajax({
+                    url: '@Url.Action("Edit", "Book")',
+                    type: 'GET',
+                    data: { id: bookId },
+                    success: function (result) {
+                        if (result.success) {
+                            $('#editBookId').val(result.book.BookId);
+                            $('#editBookTitle').val(result.book.Title);
+                            $('#editBookAuthor').val(result.book.Author);
+                            $('#editBookCategory').val(result.book.CategoryId);
+                        } else {
+                            alert('Failed to load book data.');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+
+            $('#updateBookButton').click(function () {
+                var formData = $('#editBookForm').serialize();
+
+                $.ajax({
+                    url: '@Url.Action("Edit", "Book")',
+                    type: 'POST',
+                    data: formData,
+                    success: function (result) {
+                        if (result.success) {
+                            // Reload the book list
+                            $.ajax({
+                                url: '@Url.Action("Index", "Book")',
+                                type: 'GET',
+                                success: function (data) {
+                                    var $newTableBody = $(data).find('#booksTableBody');
+                                    $('#booksTableBody').html($newTableBody.html());
+                                }
+                            });
+                            // Close the modal
+                            $('#editBookModal').modal('hide');
+                        } else {
+                            alert('Failed to update book: ' + result.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+
+            // Handle Delete Book
+            $('#deleteBookModal').on('show.bs.modal', function (e) {
+                var button = $(e.relatedTarget); // Button that triggered the modal
+                var bookId = button.data('id'); // Extract info from data-* attributes
+                $('#deleteBookButton').data('id', bookId);
+            });
+
+            $('#deleteBookButton').click(function () {
+                var bookId = $(this).data('id');
+
+                $.ajax({
+                    url: '@Url.Action("Delete", "Book")',
+                    type: 'POST',
+                    data: { id: bookId },
+                    success: function (result) {
+                        if (result.success) {
+                            // Reload the book list
+                            $.ajax({
+                                url: '@Url.Action("Index", "Book")',
+                                type: 'GET',
+                                success: function (data) {
+                                    var $newTableBody = $(data).find('#booksTableBody');
+                                    $('#booksTableBody').html($newTableBody.html());
+                                }
+                            });
+                            // Close the modal
+                            $('#deleteBookModal').modal('hide');
+                        } else {
+                            alert('Failed to delete book.');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
             });
         });
     </script>
