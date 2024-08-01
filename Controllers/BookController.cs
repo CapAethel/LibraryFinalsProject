@@ -1,119 +1,93 @@
 ﻿using LibraryFinalsProject.Data;
 using LibraryFinalsProject.Models;
+using LibraryFinalsProject.Services.Interface;
 using LibraryFinalsProject.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
-public class BookController : Controller
+namespace LibraryFinalsProject.Controllers
 {
-    private readonly ApplicationDbContext _context;
-
-    public BookController(ApplicationDbContext context)
+    public class BookController : Controller
     {
-        _context = context;
-    }
+        private readonly IBookService _bookService;
 
-    public async Task<IActionResult> Index()
-    {
-        var books = await _context.Books
-            .Include(b => b.Category)
-            .Select(b => new BookViewModel
-            {
-                Id = b.Id,
-                Title = b.Title,
-                Author = b.Author,
-                CategoryName = b.Category.CategoryName
-            })
-            .ToListAsync();
-
-        ViewBag.Categories = await _context.Categories.ToListAsync();
-        return View(books);
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> Create()
-    {
-        ViewBag.Categories = await _context.Categories.ToListAsync();
-        return PartialView("_CreateEdit", new Book());
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Create(Book book)
-    {
-        if (ModelState.IsValid)
+        public BookController(IBookService bookService)
         {
-            _context.Add(book);
-            await _context.SaveChangesAsync();
-            return Json(new { success = true });
+            _bookService = bookService;
         }
 
-        ViewBag.Categories = await _context.Categories.ToListAsync();
-        return PartialView("_CreateEdit", book);
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> Edit(int id)
-    {
-        var book = await _context.Books
-            .Include(b => b.Category)
-            .Where(b => b.Id == id)
-            .Select(b => new BookViewModel
-            {
-                Id = b.Id,
-                Title = b.Title,
-                Author = b.Author,
-                CategoryId = b.CategoryId // Assuming you have CategoryId in BookViewModel
-            })
-            .FirstOrDefaultAsync();
-
-        if (book == null)
+        public async Task<IActionResult> Index()
         {
-            return Json(new { success = false });
+            var books = await _bookService.GetAllBooksAsync();
+            ViewBag.Categories = await _bookService.GetAllCategoriesAsync();
+            return View(books);
         }
 
-        ViewBag.Categories = await _context.Categories.ToListAsync();
-        return PartialView("_CreateEdit", book);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Edit(Book book)
-    {
-        if (ModelState.IsValid)
+        [HttpGet]
+        public async Task<IActionResult> Create()
         {
-            try
+            ViewBag.Categories = await _bookService.GetAllCategoriesAsync();
+            return PartialView("Index", new Book());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(Book book)
+        {
+            if (ModelState.IsValid)
             {
-                _context.Update(book);
-                await _context.SaveChangesAsync();
+                await _bookService.CreateBookAsync(book);
                 return Json(new { success = true });
             }
-            catch (DbUpdateConcurrencyException)
+
+            ViewBag.Categories = await _bookService.GetAllCategoriesAsync();
+            return PartialView("Index", book);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var bookViewModel = await _bookService.GetBookByIdAsync(id);
+
+            if (bookViewModel == null)
             {
-                if (!_context.Books.Any(e => e.Id == book.Id))
+                return Json(new { success = false });
+            }
+
+            ViewBag.Categories = await _bookService.GetAllCategoriesAsync();
+            return PartialView("Index", bookViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(Book book)
+        {
+            if (ModelState.IsValid)
+            {
+                try
                 {
-                    return Json(new { success = false });
+                    await _bookService.UpdateBookAsync(book);
+                    return Json(new { success = true });
                 }
-                else
+                catch (DbUpdateConcurrencyException)
                 {
-                    throw;
+                    if (await _bookService.GetBookByIdAsync(book.Id) == null)
+                    {
+                        return Json(new { success = false });
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
             }
+
+            ViewBag.Categories = await _bookService.GetAllCategoriesAsync();
+            return PartialView("Index", book);
         }
 
-        ViewBag.Categories = await _context.Categories.ToListAsync();
-        return PartialView("_CreateEdit", book);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Delete(int id)
-    {
-        var book = await _context.Books.FindAsync(id);
-        if (book == null)
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
         {
-            return Json(new { success = false });
+            await _bookService.DeleteBookAsync(id);
+            return Json(new { success = true });
         }
-
-        _context.Books.Remove(book);
-        await _context.SaveChangesAsync();
-        return Json(new { success = true });
     }
 }
