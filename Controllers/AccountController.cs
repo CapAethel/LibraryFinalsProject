@@ -9,6 +9,9 @@ using System.Security.Claims;
 using System.Linq;
 using System.Threading.Tasks;
 using LibraryFinalsProject.Services.Interface;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
 namespace LibraryFinalsProject.Controllers
 {
     public class AccountController : Controller
@@ -39,11 +42,11 @@ namespace LibraryFinalsProject.Controllers
                 if (user != null)
                 {
                     var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, user.Email),
-                    new Claim("Name", user.Name),
-                    new Claim(ClaimTypes.Role, "User"),
-                };
+                    {
+                        new Claim(ClaimTypes.Name, user.Email),
+                        new Claim("Name", user.Name),
+                        new Claim(ClaimTypes.Role, user.RoleId == 1 ? "User" : "Admin"),
+                    };
 
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     var authProperties = new AuthenticationProperties
@@ -64,6 +67,11 @@ namespace LibraryFinalsProject.Controllers
 
         public IActionResult Registration()
         {
+            ViewBag.Roles = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "1", Text = "User" },
+                new SelectListItem { Value = "2", Text = "Admin" }
+            };
             return View();
         }
 
@@ -79,13 +87,19 @@ namespace LibraryFinalsProject.Controllers
                     {
                         Email = model.Email,
                         Password = model.Password,
-                        Name = model.Name
+                        Name = model.Name,
+                        RoleId = model.RoleId
                     };
 
                     await _userService.CreateUserAsync(user);
 
                     ModelState.Clear();
                     ViewBag.Message = $"{user.Email} is successfully registered. Please proceed to log in.";
+                    ViewBag.Roles = new List<SelectListItem>
+                    {
+                        new SelectListItem { Value = "1", Text = "User" },
+                        new SelectListItem { Value = "2", Text = "Admin" }
+                    };
                     return View();
                 }
                 else
@@ -93,6 +107,11 @@ namespace LibraryFinalsProject.Controllers
                     ModelState.AddModelError("", "Email already registered.");
                 }
             }
+            ViewBag.Roles = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "1", Text = "User" },
+                new SelectListItem { Value = "2", Text = "Admin" }
+            };
             return View(model);
         }
 
