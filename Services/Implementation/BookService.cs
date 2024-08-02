@@ -1,4 +1,5 @@
-﻿using LibraryFinalsProject.Data.Repositories;
+﻿using LibraryFinalsProject.Data.Interfaces;
+using LibraryFinalsProject.Data.Repositories;
 using LibraryFinalsProject.Models;
 using LibraryFinalsProject.Services.Interface;
 using LibraryFinalsProject.ViewModels;
@@ -8,9 +9,9 @@ namespace LibraryFinalsProject.Services.Implementation
     public class BookService : IBookService
     {
         private readonly IBookRepository _bookRepository;
-        private readonly IRepository<Category> _categoryRepository;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public BookService(IBookRepository bookRepository, IRepository<Category> categoryRepository)
+        public BookService(IBookRepository bookRepository, ICategoryRepository categoryRepository)
         {
             _bookRepository = bookRepository;
             _categoryRepository = categoryRepository;

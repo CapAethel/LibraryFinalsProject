@@ -1,4 +1,5 @@
 using LibraryFinalsProject.Data;
+using LibraryFinalsProject.Data.Interfaces;
 using LibraryFinalsProject.Data.Repositories;
 using LibraryFinalsProject.Models;
 using LibraryFinalsProject.Services.Implementation;
@@ -17,9 +18,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
-builder.Services.AddScoped<IRepository<Category>, Repository<Category>>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBookService, BookService>();
+
 var app = builder.Build();
 
 
