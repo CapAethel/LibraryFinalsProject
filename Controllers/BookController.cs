@@ -1,4 +1,3 @@
-﻿using LibraryFinalsProject.Data;
 using LibraryFinalsProject.Models;
 using LibraryFinalsProject.Services.Interface;
 using LibraryFinalsProject.ViewModels;
@@ -16,13 +15,6 @@ namespace LibraryFinalsProject.Controllers
         }
 
         public async Task<IActionResult> Index()
-        {
-            var books = await _bookService.GetAllBooksAsync();
-            ViewBag.Categories = await _bookService.GetAllCategoriesAsync();
-            return View(books);
-        }
-
-        public async Task<IActionResult> Index2()
         {
             var books = await _bookService.GetAllBooksAsync();
             ViewBag.Categories = await _bookService.GetAllCategoriesAsync();
@@ -53,7 +45,6 @@ namespace LibraryFinalsProject.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var bookViewModel = await _bookService.GetBookByIdAsync(id);
-
             if (bookViewModel == null)
             {
                 return Json(new { success = false });
@@ -107,6 +98,5 @@ namespace LibraryFinalsProject.Controllers
 
             return Json(new { success = true, book = bookViewModel });
         }
-
     }
 }
