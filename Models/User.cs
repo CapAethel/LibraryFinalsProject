@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LibraryFinalsProject.Models
 {
-    public class User : IdentityUser
+    public class User 
     {
         [Key]
         public int UserId {  get; set; }
@@ -12,7 +12,8 @@ namespace LibraryFinalsProject.Models
         public String Email { get; set; }
         [DataType(DataType.Password)]
         public String Password { get; set; }
-        
+        public Role Role { get; set; }  
+        public int RoleId { get; set; }
 
     }
 }
