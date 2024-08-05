@@ -23,11 +23,7 @@ namespace LibraryFinalsProject.Controllers
             _userService = userService;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
+        
         public IActionResult Login()
         {
             return View();
@@ -55,7 +51,16 @@ namespace LibraryFinalsProject.Controllers
                     };
 
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
-                    return RedirectToAction("SecurePage");
+
+                    // Redirect based on role
+                    if (user.RoleId == 2) // Admin
+                    {
+                        return RedirectToAction("Index", "Book");
+                    }
+                    else // User
+                    {
+                        return RedirectToAction("Index2", "Book");
+                    }
                 }
                 else
                 {

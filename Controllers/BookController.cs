@@ -22,6 +22,13 @@ namespace LibraryFinalsProject.Controllers
             return View(books);
         }
 
+        public async Task<IActionResult> Index2()
+        {
+            var books = await _bookService.GetAllBooksAsync();
+            ViewBag.Categories = await _bookService.GetAllCategoriesAsync();
+            return View(books);
+        }
+
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -89,5 +96,17 @@ namespace LibraryFinalsProject.Controllers
             await _bookService.DeleteBookAsync(id);
             return Json(new { success = true });
         }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var bookViewModel = await _bookService.GetBookByIdAsync(id);
+            if (bookViewModel == null)
+            {
+                return Json(new { success = false, message = "Book not found." });
+            }
+
+            return Json(new { success = true, book = bookViewModel });
+        }
+
     }
 }
