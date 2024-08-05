@@ -1,0 +1,29 @@
+﻿@model LibraryFinalsProject.ViewModels.BookViewModel
+
+@{
+    ViewData["Title"] = "Create Book";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label for="Title">Title</label>
+        <input type="text" class="form-control" id="Title" name="Title" placeholder="Enter book title" required>
+    </div>
+    <div class="form-group">
+        <label for="Author">Author</label>
+        <input type="text" class="form-control" id="Author" name="Author" placeholder="Enter book author" required>
+    </div>
+    <div class="form-group">
+        <label for="CategoryId">Category</label>
+        <select class="form-control" id="CategoryId" name="CategoryId" required>
+            @foreach (var category in ViewBag.Categories as List<LibraryFinalsProject.Models.Category>)
+            {
+                <option value="@category.CategoryId">@category.CategoryName</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a href="@Url.Action("Index", "Book")" class="btn btn-secondary">Cancel</a>
+</form>

@@ -1,0 +1,29 @@
+﻿@model LibraryFinalsProject.ViewModels.BookViewModel
+
+@{
+    var isEdit = Model.Id != 0;
+}
+
+<form id="bookForm">
+    @if (isEdit)
+    {
+        <input type="hidden" id="editBookId" name="Id" value="@Model.Id" />
+    }
+    <div class="form-group">
+        <label for="bookTitle">Title</label>
+        <input type="text" class="form-control" id="bookTitle" name="Title" value="@Model.Title" placeholder="Enter book title" required />
+    </div>
+    <div class="form-group">
+        <label for="bookAuthor">Author</label>
+        <input type="text" class="form-control" id="bookAuthor" name="Author" value="@Model.Author" placeholder="Enter book author" required />
+    </div>
+    <div class="form-group">
+        <label for="bookCategory">Category</label>
+        <select class="form-control" id="bookCategory" name="CategoryId" required>
+            @foreach (var category in ViewBag.Categories as List<LibraryFinalsProject.Models.Category>)
+            {
+                <option value="@category.CategoryId">@category.CategoryName</option>
+            }
+        </select>
+    </div>
+</form>

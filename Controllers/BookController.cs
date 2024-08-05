@@ -1,8 +1,10 @@
-using LibraryFinalsProject.Models;
+﻿using LibraryFinalsProject.Models;
 using LibraryFinalsProject.Services.Interface;
 using LibraryFinalsProject.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+
 namespace LibraryFinalsProject.Controllers
 {
     public class BookController : Controller
@@ -14,6 +16,7 @@ namespace LibraryFinalsProject.Controllers
             _bookService = bookService;
         }
 
+        // GET: /Book/Index
         public async Task<IActionResult> Index()
         {
             var books = await _bookService.GetAllBooksAsync();
@@ -21,54 +24,77 @@ namespace LibraryFinalsProject.Controllers
             return View(books);
         }
 
+        // GET: /Book/Create
         [HttpGet]
         public async Task<IActionResult> Create()
         {
             ViewBag.Categories = await _bookService.GetAllCategoriesAsync();
-            return PartialView("Index", new Book());
+            return View(new BookViewModel());
         }
 
+        // POST: /Book/Create
         [HttpPost]
-        public async Task<IActionResult> Create(Book book)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(BookViewModel bookViewModel)
         {
             if (ModelState.IsValid)
             {
+                var book = new Book
+                {
+                    Title = bookViewModel.Title,
+                    Author = bookViewModel.Author,
+                    CategoryId = bookViewModel.CategoryId
+                };
+
                 await _bookService.CreateBookAsync(book);
-                return Json(new { success = true });
+                TempData["SuccessMessage"] = "Book created successfully!";
+                return RedirectToAction("Create");
             }
 
             ViewBag.Categories = await _bookService.GetAllCategoriesAsync();
-            return PartialView("Index", book);
+            return View(bookViewModel);
         }
 
+        // GET: /Book/Edit/5
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
             var bookViewModel = await _bookService.GetBookByIdAsync(id);
+
             if (bookViewModel == null)
             {
-                return Json(new { success = false });
+                return NotFound();
             }
 
             ViewBag.Categories = await _bookService.GetAllCategoriesAsync();
-            return PartialView("Index", bookViewModel);
+            return View(bookViewModel);
         }
 
+        // POST: /Book/Edit/5
         [HttpPost]
-        public async Task<IActionResult> Edit(Book book)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(BookViewModel bookViewModel)
         {
             if (ModelState.IsValid)
             {
+                var book = new Book
+                {
+                    Id = bookViewModel.Id,
+                    Title = bookViewModel.Title,
+                    Author = bookViewModel.Author,
+                    CategoryId = bookViewModel.CategoryId
+                };
+
                 try
                 {
                     await _bookService.UpdateBookAsync(book);
-                    return Json(new { success = true });
+                    return RedirectToAction("Index");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (await _bookService.GetBookByIdAsync(book.Id) == null)
                     {
-                        return Json(new { success = false });
+                        return NotFound();
                     }
                     else
                     {
@@ -78,25 +104,39 @@ namespace LibraryFinalsProject.Controllers
             }
 
             ViewBag.Categories = await _bookService.GetAllCategoriesAsync();
-            return PartialView("Index", book);
+            return View(bookViewModel);
         }
 
+        // POST: /Book/Delete/5
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            await _bookService.DeleteBookAsync(id);
-            return Json(new { success = true });
+            try
+            {
+                await _bookService.DeleteBookAsync(id);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle as needed
+                Console.WriteLine(ex.Message);
+                return RedirectToAction("Index"); // Redirect to Index with error handling
+            }
         }
 
+        // GET: /Book/Details/5
+        [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
             var bookViewModel = await _bookService.GetBookByIdAsync(id);
+
             if (bookViewModel == null)
             {
-                return Json(new { success = false, message = "Book not found." });
+                return NotFound();
             }
 
-            return Json(new { success = true, book = bookViewModel });
+            return View(bookViewModel);
         }
     }
 }
