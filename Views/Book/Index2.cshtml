@@ -7,7 +7,8 @@
 <h1>@ViewData["Title"]</h1>
 
 
-<table class="table">
+<!-- Book List Table -->
+<table class="table mt-4">
     <thead>
         <tr>
             <th>Title</th>
@@ -16,7 +17,7 @@
             <th>Actions</th>
         </tr>
     </thead>
-    <tbody id="booksTableBody">
+    <tbody>
         @foreach (var book in Model)
         {
             <tr>
@@ -24,79 +25,10 @@
                 <td>@book.Author</td>
                 <td>@book.CategoryName</td>
                 <td>
-                    <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#detailsBookModal" data-id="@book.Id">Details</button>
+                    <a href="@Url.Action("Details", "Book", new { id = book.Id })" class="btn btn-info btn-sm">Details</a>
+                    
                 </td>
             </tr>
         }
     </tbody>
 </table>
-
-
-<!-- Book Details Modal -->
-<div class="modal fade" id="detailsBookModal" tabindex="-1" role="dialog" aria-labelledby="detailsBookModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="detailsBookModalLabel">Book Details</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="detailsBookTitle">Title</label>
-                    <input type="text" class="form-control" id="detailsBookTitle" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="detailsBookAuthor">Author</label>
-                    <input type="text" class="form-control" id="detailsBookAuthor" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="detailsBookCategory">Category</label>
-                    <input type="text" class="form-control" id="detailsBookCategory" readonly>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            BookModal').modal('hide');
-                        } else {
-                            alert('Failed to update book: ' + result.message);
-                        }
-                    },
-        
-            // Handle Book Details
-            $('#detailsBookModal').on('show.bs.modal', function (e) {
-                var button = $(e.relatedTarget); // Button that triggered the modal
-                var Id = button.data('id'); // Extract info from data-* attributes
-
-                $.ajax({
-                    url: '@Url.Action("Details", "Books")',
-                    type: 'GET',
-                    data: { id: Id },
-                    success: function (result) {
-                        if (result.success) {
-                            $('#detailsBookTitle').val(result.book.Title);
-                            $('#detailsBookAuthor').val(result.book.Author);
-                            $('#detailsBookCategory').val(result.book.CategoryName);
-                        } else {
-                            alert('Failed to load book details: ' + result.message);
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Error:', error);
-                    }
-                });
-            });
-
-        });
-    </script>
-}

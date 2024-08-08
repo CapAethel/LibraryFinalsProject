@@ -1,16 +1,15 @@
-﻿using LibraryFinalsProject.Data;
-using LibraryFinalsProject.Models;
+﻿using LibraryFinalsProject.Models;
+using LibraryFinalsProject.Services.Interface;
 using LibraryFinalsProject.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using System.Linq;
-using System.Threading.Tasks;
-using LibraryFinalsProject.Services.Interface;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace LibraryFinalsProject.Controllers
 {
@@ -23,7 +22,6 @@ namespace LibraryFinalsProject.Controllers
             _userService = userService;
         }
 
-        
         public IActionResult Login()
         {
             return View();
@@ -41,7 +39,7 @@ namespace LibraryFinalsProject.Controllers
                     {
                         new Claim(ClaimTypes.Name, user.Email),
                         new Claim("Name", user.Name),
-                        new Claim(ClaimTypes.Role, user.RoleId == 1 ? "User" : "Admin"),
+                        new Claim(ClaimTypes.Role, user.RoleId == 1 ? "User" : "Admin")
                     };
 
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -53,14 +51,7 @@ namespace LibraryFinalsProject.Controllers
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
 
                     // Redirect based on role
-                    if (user.RoleId == 2) // Admin
-                    {
-                        return RedirectToAction("Index", "Book");
-                    }
-                    else // User
-                    {
-                        return RedirectToAction("Index2", "Book");
-                    }
+                    return RedirectToAction(user.RoleId == 2 ? "Index" : "Index2", "Book");
                 }
                 else
                 {
@@ -72,11 +63,7 @@ namespace LibraryFinalsProject.Controllers
 
         public IActionResult Registration()
         {
-            ViewBag.Roles = new List<SelectListItem>
-            {
-                new SelectListItem { Value = "1", Text = "User" },
-                new SelectListItem { Value = "2", Text = "Admin" }
-            };
+            SetupRoleSelectList();
             return View();
         }
 
@@ -91,7 +78,7 @@ namespace LibraryFinalsProject.Controllers
                     var user = new User
                     {
                         Email = model.Email,
-                        Password = model.Password,
+                        Password = model.Password, // Ensure you hash passwords in a real application
                         Name = model.Name,
                         RoleId = model.RoleId
                     };
@@ -100,11 +87,7 @@ namespace LibraryFinalsProject.Controllers
 
                     ModelState.Clear();
                     ViewBag.Message = $"{user.Email} is successfully registered. Please proceed to log in.";
-                    ViewBag.Roles = new List<SelectListItem>
-                    {
-                        new SelectListItem { Value = "1", Text = "User" },
-                        new SelectListItem { Value = "2", Text = "Admin" }
-                    };
+                    SetupRoleSelectList();
                     return View();
                 }
                 else
@@ -112,18 +95,14 @@ namespace LibraryFinalsProject.Controllers
                     ModelState.AddModelError("", "Email already registered.");
                 }
             }
-            ViewBag.Roles = new List<SelectListItem>
-            {
-                new SelectListItem { Value = "1", Text = "User" },
-                new SelectListItem { Value = "2", Text = "Admin" }
-            };
+            SetupRoleSelectList();
             return View(model);
         }
 
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Index");
+            return RedirectToAction("Login");
         }
 
         [Authorize]
@@ -131,6 +110,15 @@ namespace LibraryFinalsProject.Controllers
         {
             ViewBag.Name = HttpContext.User.Identity.Name;
             return View();
+        }
+
+        private void SetupRoleSelectList()
+        {
+            ViewBag.Roles = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "1", Text = "User" },
+                new SelectListItem { Value = "2", Text = "Admin" }
+            };
         }
     }
 }

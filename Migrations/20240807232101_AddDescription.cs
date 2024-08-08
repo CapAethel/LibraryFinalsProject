@@ -5,23 +5,12 @@
 namespace LibraryFinalsProject.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class AddDescription : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Categories",
-                columns: table => new
-                {
-                    CategoryId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CategoryName = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Categories", x => x.CategoryId);
-                });
+
 
             migrationBuilder.CreateTable(
                 name: "Books",
@@ -32,7 +21,8 @@ namespace LibraryFinalsProject.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Author = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
-        
+                    BookDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PictureUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -45,11 +35,6 @@ namespace LibraryFinalsProject.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Books_CategoryId",
-                table: "Books",
-                column: "CategoryId");
         }
 
         /// <inheritdoc />
@@ -58,8 +43,6 @@ namespace LibraryFinalsProject.Migrations
             migrationBuilder.DropTable(
                 name: "Books");
 
-            migrationBuilder.DropTable(
-                name: "Categories");
         }
     }
 }
