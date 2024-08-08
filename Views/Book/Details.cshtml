@@ -1,0 +1,14 @@
+﻿@model LibraryFinalsProject.ViewModels.BookViewModel
+
+@{
+    ViewData["Title"] = "Book Details";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <h2>@Model.Title</h2>
+    <p><strong>Author:</strong> @Model.Author</p>
+    <p><strong>Category:</strong> @Model.CategoryName</p>
+    <a href="@Url.Action("Index", "Book")" class="btn btn-secondary">Back to List</a>
+</div>

@@ -59,7 +59,7 @@ namespace LibraryFinalsProject.Controllers
                     }
                     else // User
                     {
-                        return RedirectToAction("Index2", "Book");
+                        return RedirectToAction("UserIndex", "Book");
                     }
                 }
                 else
@@ -123,7 +123,7 @@ namespace LibraryFinalsProject.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Index");
+            return RedirectToAction("Login");
         }
 
         [Authorize]
