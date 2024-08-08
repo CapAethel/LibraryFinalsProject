@@ -9,5 +9,6 @@ namespace LibraryFinalsProject.Data.Repositories
         Task<IEnumerable<Book>> GetAllWithCategoryAsync();
         Task<IEnumerable<Book>> FindWithCategoryAsync(Func<Book, bool> predicate);
         Task<Book> GetByIdWithCategoryAsync(int id);
+        Task<IEnumerable<Book>> GetAllAsync();
     }
 }

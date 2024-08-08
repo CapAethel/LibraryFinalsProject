@@ -175,10 +175,5 @@ namespace LibraryFinalsProject.Controllers
 
             return View("Details", bookViewModel);
         }
-        public IActionResult NewBooksPanel()
-        {
-            return PartialView("_NewBooksPanel");
-        }
-
     }
 }

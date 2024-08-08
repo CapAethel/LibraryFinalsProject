@@ -11,5 +11,6 @@ namespace LibraryFinalsProject.Services.Interface
         Task UpdateBookAsync(Book book);
         Task DeleteBookAsync(int id);
         Task<IEnumerable<Category>> GetAllCategoriesAsync();
+        Task<List<BookViewModel>> GetLatestBooksAsync(int count);
     }
 }

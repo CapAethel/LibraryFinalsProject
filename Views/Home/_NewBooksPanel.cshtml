@@ -1,4 +1,9 @@
-﻿
+﻿@model LibraryFinalsProject.ViewModels.HomeViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
 
 <div class="panel panel-default">
     <div class="panel-heading">
@@ -6,6 +11,21 @@
     </div>
     <div class="panel-body">
         <p>Check out the latest additions to our collection!</p>
-        <img src="~/images/picture-placeholder.jpg" alt="Library" style="width: 100px; height: auto;" />
+        <div class="row">
+            @foreach (var book in Model.LatestBooks)
+            {
+                <div class="col-md-4">
+                    <div class="media">
+                        <img class="mr-3" src="~/images/picture-placeholder.jpg" alt="Library" style="width: 150px; height: auto;">
+                        <div class="media-body">
+                            <h4 class="mt-0">@book.Title</h4>
+                            <p><strong>Author:</strong> @book.Author</p>
+                            <p><strong>Category:</strong> @book.CategoryName</p>
+                            <a class="btn btn-info">Add to cart</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
     </div>
 </div>

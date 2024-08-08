@@ -3,6 +3,9 @@ using LibraryFinalsProject.Data.Repositories;
 using LibraryFinalsProject.Models;
 using LibraryFinalsProject.Services.Interface;
 using LibraryFinalsProject.ViewModels;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace LibraryFinalsProject.Services.Implementation
 {
@@ -42,7 +45,9 @@ namespace LibraryFinalsProject.Services.Implementation
                 Id = book.Id,
                 Title = book.Title,
                 Author = book.Author,
-                CategoryId = book.CategoryId
+                CategoryId = book.CategoryId,
+                CategoryName = book.Category.CategoryName, // Ensure CategoryName is included
+                BookDescription = book.BookDescription // Ensure BookDescription is included if you have it
             };
         }
 
@@ -68,6 +73,26 @@ namespace LibraryFinalsProject.Services.Implementation
         public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
         {
             return await _categoryRepository.GetAllAsync();
+        }
+
+        public async Task<List<BookViewModel>> GetLatestBooksAsync(int count)
+        {
+            var books = await _bookRepository.GetAllAsync(); // Ensure your repository method supports sorting
+
+            var latestBooks = books
+                .OrderByDescending(b => b.Title) // Replace with your sorting criteria
+                .Take(count)
+                .Select(b => new BookViewModel
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Author = b.Author,
+                    CategoryName = b.Category?.CategoryName,
+                    BookDescription = b.BookDescription // Ensure this property is mapped
+                })
+                .ToList();
+
+            return latestBooks;
         }
     }
 }

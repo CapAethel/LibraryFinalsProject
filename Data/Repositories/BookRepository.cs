@@ -22,7 +22,7 @@ namespace LibraryFinalsProject.Data.Repositories
 
         public async Task<IEnumerable<Book>> GetAllWithCategoryAsync()
         {
-            return await _context.Books.Include(a => a.Category).ToListAsync();
+            return await _context.Books.ToListAsync();
         }
 
         public async Task<Book> GetByIdWithCategoryAsync(int id)
@@ -30,6 +30,11 @@ namespace LibraryFinalsProject.Data.Repositories
             return await _context.Books
                 .Include(b => b.Category)
                 .FirstOrDefaultAsync(b => b.Id == id);
+        }
+        public async Task<IEnumerable<Book>> GetAllAsync()
+        {
+            return await _context.Books
+                .ToListAsync();
         }
     }
 }
